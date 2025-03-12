@@ -4,6 +4,7 @@ import Inmueble from '../models/inmueble.model';
 import { AppError } from '../middlewares/error.middleware';
 import { Op } from 'sequelize';
 import Cliente from '../models/cliente.model';
+import Documento, { Estatus } from '../models/documento.model';
 
 export class InmuebleService {
     private storageService: StorageService;
@@ -166,6 +167,31 @@ export class InmuebleService {
 
         await inmueble.destroy();
     }
+
+    // Metodo para recalcular el estatus de un inmueble según sus documentos
+    async recalcularEstatusInmueble(inmuebleId: number): Promise<void> {
+        // Consultar documentos asociados
+        const documentos = await Documento.findAll({ where: { inmuebleId } });
+
+        if (documentos.length === 0) {
+            // Podrías definir un estatus por defecto o saltar la actualización
+            return;
+        }
+
+        // Si todos los documentos están aceptados
+        if (documentos.every(doc => doc.estatus === Estatus.ACEPTADO)) {
+            await Inmueble.update({ estatus: Estatus.ACEPTADO }, { where: { id: inmuebleId } });
+        }
+        // Si todos los documentos están rechazados
+        else if (documentos.every(doc => doc.estatus === Estatus.RECHAZADO)) {
+            await Inmueble.update({ estatus: Estatus.RECHAZADO }, { where: { id: inmuebleId } });
+        }
+        // En cualquier otro caso, se considera pendiente
+        else {
+            await Inmueble.update({ estatus: Estatus.PENDIENTE }, { where: { id: inmuebleId } });
+        }
+    }
+    
 }
 
 export default InmuebleService;

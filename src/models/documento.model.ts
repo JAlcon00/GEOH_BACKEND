@@ -9,11 +9,18 @@ export enum TipoDocumento {
     FOTOGRAFIA = 'fotografia'
 }
 
+export enum Estatus {
+    RECHAZADO = 'rechazado',
+    PENDIENTE = 'pendiente',
+    ACEPTADO = 'aceptado'
+}
+
 export interface DocumentoAttributes {
     id?: number;
     inmuebleId?: number;
     tipoDocumento?: TipoDocumento;
     archivoUrl?: string;
+    estatus?: Estatus;
 }
 
 /**
@@ -27,6 +34,8 @@ export class Documento extends Model<DocumentoAttributes> implements DocumentoAt
     public inmuebleId?: number;
     public tipoDocumento!: TipoDocumento;
     public archivoUrl?: string;
+    public estatus!: Estatus;
+    
 }
 
 Documento.init({
@@ -56,7 +65,13 @@ Documento.init({
         // validate: {
         //     isUrl: true
         // }
-    }
+    },
+    estatus: {
+        type: DataTypes.ENUM('rechazado', 'pendiente', 'aceptado'),
+        allowNull: false,
+        defaultValue: 'pendiente',
+    },
+
 }, {
     sequelize,
     modelName: 'Documento',
@@ -69,12 +84,14 @@ Documento.init({
             }
         }
     }
+
+    
 });
 
 // Establecer relación
 Documento.belongsTo(Inmueble, {
     foreignKey: 'inmuebleId',
-    onDelete: 'CASCADE'
+    onDelete: 'SET NULL'
 });
 Inmueble.hasMany(Documento, {
     foreignKey: 'inmuebleId'

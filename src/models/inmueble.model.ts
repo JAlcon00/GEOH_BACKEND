@@ -73,7 +73,12 @@ Inmueble.init({
     foto: {
         type: DataTypes.TEXT,
         allowNull: true
-    }
+    },
+    estatus: {
+        type: DataTypes.ENUM('rechazado', 'pendiente', 'aceptado'),
+        allowNull: false,
+        defaultValue: 'pendiente',
+    },
 }, {
     sequelize,
     modelName: 'Inmueble',

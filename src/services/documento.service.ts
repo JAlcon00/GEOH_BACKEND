@@ -1,5 +1,7 @@
 import { StorageService } from './storage.service';
 import Inmueble from '../models/inmueble.model';
+import { Estatus } from '../models/documento.model';
+import InmuebleService from './inmueble.service';
 import { Documento, TipoDocumento } from '../models/documento.model';
 import { AppError } from '../middlewares/error.middleware';
 
@@ -122,7 +124,9 @@ export class DocumentoService {
     async actualizarDocumento(
         id: number,
         file: Express.Multer.File,
-        tipoDocumento?: TipoDocumento
+        tipoDocumento?: TipoDocumento,
+        // Puedes habilitar el cambio de estatus manualmente si lo requiere el usuario:
+        estatus?: Estatus
     ): Promise<Documento> {
         const documento = await Documento.findByPk(id);
         if (!documento) {
@@ -130,7 +134,7 @@ export class DocumentoService {
         }
 
         try {
-            // Si hay nuevo archivo, eliminar el anterior y subir el nuevo
+            // Si cambia el archivo, eliminar el anterior y subir el nuevo
             if (file) {
                 if (documento.archivoUrl) {
                     await this.storageService.deleteFile(documento.archivoUrl);
@@ -138,12 +142,24 @@ export class DocumentoService {
                 documento.archivoUrl = await this.storageService.uploadFile(file, 'documentos');
             }
 
-            // Actualizar tipo si se proporciona
+            // Permitir actualizar tipo de documento si se proporciona
             if (tipoDocumento && this.validarTipoDocumento(tipoDocumento)) {
                 documento.tipoDocumento = tipoDocumento;
             }
+            
+            // Permitir que el usuario manipule directamente el estatus del documento
+            if (estatus) {
+                documento.estatus = estatus;
+            }
 
             await documento.save();
+
+            // Recalcular el estatus del inmueble asociado después del cambio
+            const inmuebleService = new InmuebleService();
+            if (documento.inmuebleId) {
+                await inmuebleService.recalcularEstatusInmueble(documento.inmuebleId);
+            }
+            
             return documento;
         } catch (error) {
             throw new AppError(500, 'Error al actualizar documento');
