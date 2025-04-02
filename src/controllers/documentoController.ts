@@ -73,15 +73,31 @@ export class DocumentoController {
 
     async actualizarDocumento(req: Request, res: Response, next: NextFunction): Promise<void>  {
         const { id } = req.params;
-        const { tipoDocumento } = req.body;
+        const { tipoDocumento, estatus } = req.body;
         const file = req.file;
-
+    
         try {
-            if (!file) {
-                res.status(400).json({ message: 'No se ha subido ningún archivo' });
+            if (!file && !estatus && !tipoDocumento) {
+                res.status(400).json({ message: 'No se ha enviado información para actualizar' });
                 return;
             }
-            const documento = await documentoService.actualizarDocumento(Number(id), file, tipoDocumento as TipoDocumento);
+            const documento = await documentoService.actualizarDocumento(Number(id), file, tipoDocumento as TipoDocumento, estatus);
+            res.status(200).json(documento);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async actualizarEstatusDocumento(req: Request, res: Response, next: NextFunction): Promise<void>  {
+        const { id } = req.params;
+        const { estatus } = req.body;
+
+        try {
+            if (!estatus) {
+                res.status(400).json({ message: 'No se ha enviado el nuevo estatus' });
+                return;
+            }
+            const documento = await documentoService.actualizarEstatusDocumento(Number(id), estatus);
             res.status(200).json(documento);
         } catch (error) {
             next(error);

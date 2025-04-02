@@ -12,5 +12,6 @@ router.get('/:id', DocumentoController.obtenerDocumento);
 router.get('/inmueble/:inmuebleId', DocumentoController.obtenerDocumentosPorInmueble);
 router.delete('/:id', DocumentoController.eliminarDocumento);
 router.put('/:id', multerInstance.single('file'), handleUploadError, DocumentoController.actualizarDocumento);
+router.put('/:id/estatus', DocumentoController.actualizarEstatusDocumento);
 
 export default router;

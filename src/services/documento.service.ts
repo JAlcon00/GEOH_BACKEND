@@ -123,7 +123,7 @@ export class DocumentoService {
     // Método para actualizar un documento por su ID
     async actualizarDocumento(
         id: number,
-        file: Express.Multer.File,
+        file?: Express.Multer.File,
         tipoDocumento?: TipoDocumento,
         // Puedes habilitar el cambio de estatus manualmente si lo requiere el usuario:
         estatus?: Estatus
@@ -164,6 +164,25 @@ export class DocumentoService {
         } catch (error) {
             throw new AppError(500, 'Error al actualizar documento');
         }
+    }
+
+    async actualizarEstatusDocumento(id: number, estatus: Estatus): Promise<Documento> {
+        const documento = await Documento.findByPk(id);
+        if (!documento) {
+            throw new AppError(404, 'Documento no encontrado');
+        }
+
+        documento.estatus = estatus;
+
+        await documento.save();
+
+        // Recalcular el estatus del inmueble asociado después del cambio
+        const inmuebleService = new InmuebleService();
+        if (documento.inmuebleId) {
+            await inmuebleService.recalcularEstatusInmueble(documento.inmuebleId);
+        }
+
+        return documento;
     }
 
     // Método para validar el tipo de documento
