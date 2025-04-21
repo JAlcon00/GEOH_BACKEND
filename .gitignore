@@ -5,3 +5,41 @@ dist/
 keyfile.json
 
 uploads/
+
+# Archivos y carpetas comunes a ignorar en proyectos Node.js y frontend
+.DS_Store
+.vscode/
+.idea/
+.parcel-cache/
+.turbo/
+.next/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.env.*
+.sass-cache/
+.nyc_output/
+.pnpm-debug.log*
+.history/
+Thumbs.db
+coverage/
+
+# Ignorar archivos temporales de Windows
+*.tmp
+*.temp
+
+# Ignorar archivos de pruebas
+*.test.ts
+*.spec.ts
+
+# Ignorar archivos de configuración locales
+*.local.js
+*.local.json
+
+# Ignorar archivos de configuración de entorno
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
