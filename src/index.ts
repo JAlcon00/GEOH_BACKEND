@@ -22,8 +22,20 @@ const corsOptions = {
     optionsSuccessStatus: 204
   };
 
+// Middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rutas
+app.use('/api/documentos', documentoRoutes);
+app.use('/api/clientes', clienteRoutes);
+app.use('/api/inmuebles', inmuebleRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/auth', authRoutes);
+
 // Verificar conexiones
-const verificarConexiones = async () => {
+export const verificarConexiones = async () => {
     try {
         // Verificar BD
         await testConnection();
@@ -40,31 +52,17 @@ const verificarConexiones = async () => {
 };
 
 // Iniciar servidor solo si las conexiones son exitosas
-const iniciarServidor = async () => {
-    try {
-        await verificarConexiones();
-
-        // Middleware
-        app.use(cors(corsOptions));
-        app.use(express.json());
-        app.use(express.urlencoded({ extended: true }));
-
-        // Rutas
-        app.use('/api/documentos', documentoRoutes);
-        app.use('/api/clientes', clienteRoutes);
-        app.use('/api/inmuebles', inmuebleRoutes);
-        app.use('/api/search', searchRoutes);
-        app.use('/api/auth', authRoutes);
-
-        // Ruta de archivos estáticos
-        app.listen(process.env.PORT || 3001, () => {
-            console.log(`🚀 Servidor corriendo en el puerto ${process.env.PORT || 3001}`);
-        });
-    } catch (error) {
-        console.error('❌ Error al iniciar el servidor:', error);
-    }
-};
-
-iniciarServidor();
+if (require.main === module) {
+    (async () => {
+        try {
+            await verificarConexiones();
+            app.listen(process.env.PORT || 3001, () => {
+                console.log(`🚀 Servidor corriendo en el puerto ${process.env.PORT || 3001}`);
+            });
+        } catch (error) {
+            console.error('❌ Error al iniciar el servidor:', error);
+        }
+    })();
+}
 
 export default app;

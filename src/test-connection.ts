@@ -1,11 +1,11 @@
-import { testConnection } from './config/db.config';
+// import { testConnection } from './config/db.config';
 
-const main = async () => {
-    try {
-        await testConnection();
-    } catch (error) {
-        process.exit(1);
-    }
-};
+// const main = async () => {
+//     try {
+//         await testConnection();
+//     } catch (error) {
+//         process.exit(1);
+//     }
+// };
 
-main();
+// main();

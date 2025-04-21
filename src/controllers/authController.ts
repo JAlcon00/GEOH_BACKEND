@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Usuario } from '../models/usuario.model';
-import { generateToken } from '../config/jwt.config';
+import { generateToken, decryptPassword } from '../config/jwt.config';
 
 interface LoginRequest extends Request {
     body: {
@@ -30,7 +30,19 @@ export class AuthController {
                 return;
             }
 
-            const esValido = await usuario.validarContrasena(contrasena);
+            // Usar la contraseña directamente si parece texto plano
+            let contrasenaProcesada = contrasena;
+            // Si parece base64 (longitud múltiplo de 4 y solo caracteres base64), intenta desencriptar
+            if (/^[A-Za-z0-9+/=]+$/.test(contrasena) && contrasena.length % 4 === 0) {
+                try {
+                    contrasenaProcesada = decryptPassword(contrasena);
+                } catch (e) {
+                    // Si falla la desencriptación, usa la contraseña original
+                    contrasenaProcesada = contrasena;
+                }
+            }
+
+            const esValido = await usuario.validarContrasena(contrasenaProcesada);
             if (!esValido) {
                 res.status(401).json({ mensaje: 'Credenciales inválidas' });
                 return;
@@ -60,16 +72,32 @@ export class AuthController {
         try {
             const { nombre, apellido, contrasena, tipo_usuario = 'usuario' } = req.body;
 
+            // Validación de datos obligatorios
+            if (!nombre || !apellido || !contrasena) {
+                res.status(400).json({ mensaje: 'Datos incompletos' });
+                return;
+            }
+
             const existe = await Usuario.findOne({ where: { nombre } });
             if (existe) {
                 res.status(400).json({ mensaje: 'El usuario ya existe' });
                 return;
             }
 
+            // Usar la contraseña directamente si parece texto plano
+            let contrasenaProcesada = contrasena;
+            if (/^[A-Za-z0-9+/=]+$/.test(contrasena) && contrasena.length % 4 === 0) {
+                try {
+                    contrasenaProcesada = decryptPassword(contrasena);
+                } catch (e) {
+                    contrasenaProcesada = contrasena;
+                }
+            }
+
             const usuario = await Usuario.create({
                 nombre,
                 apellido,
-                contrasena,
+                contrasena: contrasenaProcesada,
                 tipo_usuario
             });
 
