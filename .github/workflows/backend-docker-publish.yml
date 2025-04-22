@@ -35,4 +35,27 @@ jobs:
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
-        # Add any additional steps you need for deployment or notifications here
+      # ——— Despliegue en Cloud Run ———
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Enable Cloud Run API
+        run: gcloud services enable run.googleapis.com
+
+      - name: Configure gcloud defaults
+        run: |
+          gcloud config set run/region us-central1
+          gcloud config set run/platform managed
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy backend-service \
+            --image docker.io/${{ secrets.DOCKERHUB_USERNAME }}/backend:latest \
+            --allow-unauthenticated \
+            --memory=512Mi \
+            --concurrency=80 \
+            --quiet
