@@ -1,18 +1,14 @@
-# Dockerfile para el servicio backend
-FROM node:18-alpine
-
-# Directorio de trabajo
-WORKDIR /usr/src/app
-
-# Instala dependencias de producción
+FROM node:18-alpine AS builder
+WORKDIR /app
 COPY package*.json ./
-RUN npm install --production
-
-# Copia el resto del código y compila TypeScript
+RUN npm install
 COPY . .
 RUN npm run build
 
-# Configura puerto y punto de entrada
-ENV PORT=8080
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY --from=builder /app/dist ./dist
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]
