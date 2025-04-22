@@ -1,26 +1,9 @@
-name: Build and Publish Backend Docker Image
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-push-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
       - name: Install dependencies
+        working-directory: backend
         run: npm ci
 
       - name: Run tests
+        working-directory: backend
         run: npm test -- --passWithNoTests
 
       - name: Log in to Docker Hub
@@ -30,9 +13,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
+        working-directory: backend
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest .
 
       - name: Push Docker image
+        working-directory: backend
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
       # ——— Despliegue en Cloud Run ———
@@ -55,6 +40,7 @@ jobs:
           gcloud config set run/platform managed
 
       - name: Deploy to Cloud Run
+        working-directory: backend
         run: |
           gcloud run deploy backend-service \
             --image docker.io/${{ secrets.DOCKERHUB_USERNAME }}/backend:latest \
