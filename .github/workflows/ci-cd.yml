@@ -1,0 +1,33 @@
+name: CI/CD Full Stack
+
+on: [ push ]
+
+jobs:
+  build-deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout, setup-node, install, test, docker-login…
+      - run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
+      - run: |
+          gcloud run deploy backend-service \
+            --image docker.io/${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} \
+            --region ${{ secrets.GCP_REGION }} --platform managed \
+            --allow-unauthenticated \
+            --set-env-vars DB_HOST=${{ secrets.DB_HOST }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+    outputs:
+      backend-url: ${{ steps.deploy-backend.outputs.url }}
+
+  build-deploy-frontend:
+    needs: build-deploy-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: |
+          echo "VITE_API_URL=${{ needs.build-deploy-backend.outputs.backend-url }}/api" > .env.production
+          npm run build
+      - run: |
+          # opcional: containerizar o subir dist/ a bucket
+          echo "Frontend listo en dist/"
