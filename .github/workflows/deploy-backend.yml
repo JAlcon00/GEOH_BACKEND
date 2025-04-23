@@ -17,9 +17,11 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
+        working-directory: backend
         run: npm ci
 
       - name: Run tests
+        working-directory: backend
         run: npm test -- --passWithNoTests
 
       - name: Log in to Docker Hub
@@ -29,7 +31,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -f backend/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} .
+        run: docker build -f backend/Dockerfile 
+                -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} \ 
+                backend
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
