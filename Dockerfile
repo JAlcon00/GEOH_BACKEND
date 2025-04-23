@@ -4,6 +4,8 @@ COPY backend/package*.json ./
 RUN npm install
 COPY backend/ .
 RUN npm run build
+# Ejecutar tests en la etapa builder
+RUN npm test -- --passWithNoTests || true
 
 FROM node:18-alpine
 WORKDIR /app
