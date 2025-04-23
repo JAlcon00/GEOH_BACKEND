@@ -17,11 +17,11 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        working-directory: ./backend
+        working-directory: backend
         run: npm ci
 
       - name: Run tests
-        working-directory: ./backend
+        working-directory: backend
         run: npm test -- --passWithNoTests
 
       - name: Log in to Docker Hub
@@ -31,15 +31,15 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -f backend/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} backend
+        run: docker build -f backend/Dockerfile -t jalcon00/backend:${{ github.sha }} backend
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
+        run: docker push jalcon00/backend:${{ github.sha }}
 
       - name: Tag and push latest
         run: |
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          docker tag jalcon00/backend:${{ github.sha }} jalcon00/backend:latest
+          docker push jalcon00/backend:latest
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
