@@ -35,6 +35,12 @@ jobs:
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
 
+      - name: Tag and push latest
+        working-directory: backend
+        run: |
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
         with:
