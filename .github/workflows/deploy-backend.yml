@@ -29,7 +29,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -f backend/Dockerfile -t jalcon00/backend:${{ github.sha }} backend
+        working-directory: backend
+        run: docker build -f Dockerfile -t jalcon00/backend:${{ github.sha }} .
 
       - name: Push Docker image
         run: docker push jalcon00/backend:${{ github.sha }}
