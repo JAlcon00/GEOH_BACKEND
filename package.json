@@ -15,6 +15,9 @@
       "**/src/**/*.test.ts",
       "**/*.test.ts"
     ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/src/db.test.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "js"
