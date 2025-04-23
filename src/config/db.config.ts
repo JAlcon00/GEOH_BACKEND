@@ -8,21 +8,12 @@ dotenv.config(); // Carga las variables de entorno desde el archivo .env
 const sequelize = new Sequelize(
     process.env.DB_NAME as string,
     process.env.DB_USER as string,
-    process.env.DB_PASSWORD as string,
+    (process.env.DB_PASS ?? process.env.DB_PASSWORD) as string,
     {
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.PORTDB || '3306', 10),
+      host: process.env.DB_HOST || '127.0.0.1',
+      port: parseInt(process.env.DB_PORT || process.env.PORTDB || '3306', 10),
       dialect: 'mysql',
-      dialectOptions: {
-        ssl: {
-          ca: fs.readFileSync(process.env.SSL_CA as string),
-          cert: fs.readFileSync(process.env.SSL_CERT as string),
-          key: fs.readFileSync(process.env.SSL_KEY as string),
-          rejectUnauthorized: true,
-          servername: undefined, // Esto desactiva el ServerName
-        },
-        connectTimeout: 60000 // Aumenta el tiempo de espera de la conexión a 60 segundos
-      },
+      // Configuración mínima para proxy local; puedes reactivar SSL si es necesario
       logging: false,
       pool: {
         max: 10,          // Aumenta el máximo de conexiones en el pool

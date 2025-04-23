@@ -34,6 +34,16 @@ app.use('/api/inmuebles', inmuebleRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/auth', authRoutes);
 
+// Endpoint de prueba de conexión a la base de datos
+app.get('/ping-db', async (req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.send({ status: 'DB OK' });
+  } catch (err) {
+    res.status(500).send({ error: (err as Error).message });
+  }
+});
+
 // Verificar conexiones
 export const verificarConexiones = async () => {
     try {
