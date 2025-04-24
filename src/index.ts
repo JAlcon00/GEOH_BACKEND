@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 import { sequelize, testConnection } from './config/db.config';
 import documentoRoutes from './routes/documento.routes';
 import clienteRoutes from './routes/cliente.routes';
@@ -61,16 +63,32 @@ export const verificarConexiones = async () => {
     }
 };
 
+// Utilidad para loguear en archivo y consola
+const logStartup = (msg: string) => {
+    const logPath = path.join(__dirname, '../logs/startup.log');
+    const logMsg = `[${new Date().toISOString()}] ${msg}\n`;
+    try {
+        fs.mkdirSync(path.dirname(logPath), { recursive: true });
+        fs.appendFileSync(logPath, logMsg);
+    } catch (e) {
+        // Si falla el log en archivo, solo loguea en consola
+    }
+    console.log(msg);
+};
+
 // Iniciar servidor solo si las conexiones son exitosas
 if (require.main === module) {
     (async () => {
         try {
+            logStartup('⏳ Iniciando verificación de conexiones...');
+            logStartup(`Variables de entorno: DB_HOST=${process.env.DB_HOST}, DB_USER=${process.env.DB_USER}, DB_NAME=${process.env.DB_NAME}, PORT=${process.env.PORT}`);
             await verificarConexiones();
+            logStartup('✅ Conexiones verificadas. Iniciando servidor...');
             app.listen(process.env.PORT || 8080, () => {
-                console.log(`🚀 Servidor corriendo en el puerto ${process.env.PORT || 8080}`);
+                logStartup(`🚀 Servidor corriendo en el puerto ${process.env.PORT || 8080}`);
             });
         } catch (error) {
-            console.error('❌ Error al iniciar el servidor:', error);
+            logStartup('❌ Error al iniciar el servidor (bloque principal): ' + (error instanceof Error ? error.stack : String(error)));
         }
     })();
 }
