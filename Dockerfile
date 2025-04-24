@@ -1,8 +1,8 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY backend/package*.json ./
+COPY package*.json ./
 RUN npm install
-COPY backend/ .
+COPY . .
 RUN npm run build
 # Ejecutar tests en la etapa builder
 RUN npm test -- --passWithNoTests || true
