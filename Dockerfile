@@ -4,6 +4,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
+RUN ls -l dist/index.js
 # Ejecutar tests en la etapa builder
 RUN npm test -- --passWithNoTests || true
 
