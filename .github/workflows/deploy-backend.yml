@@ -48,7 +48,7 @@ jobs:
       - name: Setup gcloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ secrets.GCP_PROJECT }}
+  project_id: ${{ secrets.GCP_PROJECT }}
 
       - name: Configure gcloud defaults
         run: |
@@ -62,5 +62,5 @@ jobs:
             --allow-unauthenticated \
             --memory=512Mi \
             --concurrency=80 \
-            --set-env-vars DB_HOST=${{ secrets.DB_HOST }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_BUCKET_NAME=${{ secrets.GOOGLE_BUCKET_NAME }}
+            --set-env-vars DB_HOST=${{ secrets.DB_HOST }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_BUCKET_NAME=${{ secrets.GOOGLE_BUCKET_NAME }},GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
             --quiet
