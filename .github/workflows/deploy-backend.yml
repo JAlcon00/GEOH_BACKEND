@@ -1,10 +1,5 @@
 name: Deploy Backend
-# This workflow builds and deploys the backend service to Google Cloud Run
-# and pushes the Docker image to Docker Hub.
-# This workflow is triggered on pushes to the main branch.
-# It uses the Docker Hub credentials and Google Cloud credentials stored in GitHub secrets.
-# The workflow consists of the following steps:
-# 1. Checkout the repository
+
 on:
   push:
     branches: [ main ]
