@@ -1,5 +1,6 @@
 name: Deploy Backend
-
+# This workflow builds and deploys the backend service to Google Cloud Run
+# and pushes the Docker image to Docker Hub.
 on:
   push:
     branches: [ main ]
