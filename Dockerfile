@@ -9,7 +9,7 @@ RUN npm test -- --passWithNoTests || true
 
 FROM node:18-alpine
 WORKDIR /app
-COPY backend/package*.json ./
+COPY package*.json ./
 RUN npm install --production
 COPY --from=builder /app/dist ./dist
 EXPOSE 8080
