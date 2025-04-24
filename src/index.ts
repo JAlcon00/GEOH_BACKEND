@@ -67,7 +67,7 @@ if (require.main === module) {
         try {
             await verificarConexiones();
             app.listen(process.env.PORT || 3001, () => {
-                console.log(`🚀 Servidor corriendo en el puerto ${process.env.PORT || 3001}`);
+                console.log(`🚀 Servidor corriendo en el puerto ${process.env.PORT || 8080}`);
             });
         } catch (error) {
             console.error('❌ Error al iniciar el servidor:', error);
