@@ -5,8 +5,11 @@ RUN npm install
 COPY . .
 RUN npm run build
 RUN ls -l dist/src/index.js
-# Copiar el archivo de credenciales al directorio de salida
+# Copiar el archivo de credenciales y los certificados SSL al directorio de salida
 COPY src/config/keys/keyfile.json dist/src/config/keys/keyfile.json
+COPY src/config/keys/server-ca.pem dist/src/config/keys/server-ca.pem
+COPY src/config/keys/client-cert.pem dist/src/config/keys/client-cert.pem
+COPY src/config/keys/client-key.pem dist/src/config/keys/client-key.pem
 # Ejecutar tests en la etapa builder
 RUN npm test -- --passWithNoTests || true
 
