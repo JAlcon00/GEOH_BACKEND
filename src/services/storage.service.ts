@@ -12,12 +12,8 @@ export class StorageService {
             throw new AppError(500, 'GOOGLE_BUCKET_NAME no configurado');
         }
 
-        // const keyFilePath = path.resolve(__dirname, '..', 'config', 'keys', 'keyfile.json');
-        // console.log('Ruta absoluta de credenciales:', keyFilePath);
-
         try {
             this.storage = new Storage({
-                // keyFilename: keyFilePath,
                 projectId: process.env.GOOGLE_PROJECT_ID
             });
 

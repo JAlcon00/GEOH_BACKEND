@@ -29,11 +29,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Crear keyfile.json desde secret
-        run: |
-          mkdir -p src/config/keys
-          echo "${{ secrets.GCP_SA_KEY }}" > src/config/keys/keyfile.json
-
       - name: Build Docker image
         run: docker build -f Dockerfile -t jalcon00/backend:${{ github.sha }} .
 
