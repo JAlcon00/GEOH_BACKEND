@@ -18,6 +18,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 COPY --from=builder /app/dist ./dist
+# No copiar archivos .env locales ni de desarrollo
+ENV NODE_ENV=production
 EXPOSE 8080
 CMD ["node", "dist/src/index.js"]
 # Note: This Dockerfile is for a Node.js application. It uses a multi-stage build to first install all dependencies and build the application, and then create a smaller image for production with only the necessary files.
