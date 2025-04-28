@@ -1,13 +1,9 @@
 import { Storage } from '@google-cloud/storage';
-import path from 'path';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const keyFilePath = path.join(__dirname, 'keys', 'keyfile.json');
-
 export const storage = new Storage({
-    keyFilename: keyFilePath,
     projectId: process.env.GOOGLE_PROJECT_ID
 });
 
