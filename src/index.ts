@@ -77,6 +77,7 @@ const logStartup = (msg: string) => {
 };
 
 // Iniciar servidor solo si las conexiones son exitosas
+// y si este archivo es el principal (no importado)
 if (require.main === module) {
     (async () => {
         try {
