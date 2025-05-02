@@ -103,19 +103,23 @@ export class StorageService {
             // Extraer nombre del archivo de la URL
             const fileName = fileUrl.split(`${this.bucket}/`)[1];
             if (!fileName) {
-                throw new Error('URL de archivo inválida');
+                throw new AppError(400, 'URL de archivo inválida');
             }
 
             const file = this.storage.bucket(this.bucket).file(fileName);
             const [exists] = await file.exists();
 
             if (!exists) {
-                throw new Error('Archivo no encontrado en Storage');
+                // Lanzar error 404 si el archivo no existe
+                throw new AppError(404, 'Archivo no encontrado en Storage');
             }
 
             await file.delete();
             console.log(`✅ Archivo ${fileName} eliminado correctamente`);
-        } catch (error) {
+        } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
             console.error('❌ Error al eliminar archivo:', error);
             throw new AppError(500, 'Error al eliminar archivo de Storage');
         }

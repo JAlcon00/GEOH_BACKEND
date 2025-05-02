@@ -114,7 +114,15 @@ export class DocumentoService {
         }
 
         if (documento.archivoUrl) {
-            await this.storageService.deleteFile(documento.archivoUrl);
+            try {
+                await this.storageService.deleteFile(documento.archivoUrl);
+            } catch (error: any) {
+                if (error instanceof AppError && error.statusCode === 404) {
+                    // Si el archivo ya no existe, continuar (idempotente)
+                } else {
+                    throw error;
+                }
+            }
         }
 
         await documento.destroy();
