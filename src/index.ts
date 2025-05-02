@@ -17,12 +17,17 @@ dotenv.config();
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://geo-h.netlify.app'
+];
+
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Actualiza según la URL de tu frontend
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     optionsSuccessStatus: 204
-  };
+};
 
 // Middleware
 app.use(cors(corsOptions));
