@@ -162,7 +162,15 @@ export class InmuebleService {
         }
 
         if (inmueble.foto) {
-            await this.storageService.deleteFile(inmueble.foto);
+            try {
+                await this.storageService.deleteFile(inmueble.foto);
+            } catch (error: any) {
+                if (error instanceof AppError && error.statusCode === 404) {
+                    // Si la foto ya no existe, continuar (idempotente)
+                } else {
+                    throw error;
+                }
+            }
         }
 
         await inmueble.destroy();
