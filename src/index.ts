@@ -11,6 +11,7 @@ import inmuebleRoutes from './routes/inmueble.routes';
 import searchRoutes from './routes/search.routes';
 import authRoutes from './routes/auth.routes';
 
+//JALCON
 // Configurar variables de entorno
 dotenv.config();
 
